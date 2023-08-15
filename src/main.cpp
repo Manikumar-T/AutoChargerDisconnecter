@@ -18,7 +18,7 @@ void buzzerTone(int tone_no);
 WiFiUDP udp;
 
 //char arrar of message to send to client
-char replayPacket[] = "Hi i am esp8266 speaking ";
+//char replayPacket[] = "Hi i am esp8266 speaking ";
 
 //Function to Compare the two string
 bool isEqual(char value1[] , char value2[]) {
@@ -28,12 +28,14 @@ bool isEqual(char value1[] , char value2[]) {
 //Buzzer to produce the tone 
 void buzzerTone(int tone_no) {
   if(tone_no == 0) {
+    //tone for of the buzzer
     noTone(BUZZER);
   }else if (tone_no == 1) {
+    //for forgot to turn of the charger
       tone(BUZZER,1000);
       
   }else if (tone_no == 2){
-    
+    //Charge is full
     for(int i=0; i<5; i++)
     {
       tone(BUZZER,1000);
@@ -48,6 +50,7 @@ void buzzerTone(int tone_no) {
   }else if (tone_no == 3){
     for(int i=0; i<5; i++)
     {
+      //charge is low
       tone(BUZZER,3000);
       delay(1000);
       tone(BUZZER,2500);
@@ -63,7 +66,7 @@ void buzzerTone(int tone_no) {
 
     }
     noTone(BUZZER);
-    Serial.print("\n Buzzer OFF");
+    Serial.print("\n Buzzer OFF\n");
     
   }
   
@@ -73,7 +76,7 @@ void setup() {
   
   //Begin the Serial monitor
   Serial.begin(9600);
-  Serial.print("ESP8266 is Started....\n");
+  Serial.print("\nESP8266 is Started....\n");
 
   //Connect to the wifi network using the criedntials
   WiFi.begin(SSID,PASSWORD);
@@ -86,11 +89,11 @@ void setup() {
     Serial.print(".");
   }
   //To print the localIP of esp8266
-  Serial.print("Connected, IP address:");
+  Serial.print("\nConnected, IP address:");
   Serial.print(WiFi.localIP());
   
   //Begin to listening 
-  Serial.print("\nStart UDP server at port 4210");
+  Serial.print("\nStart UDP server at port 4210\n");
   udp.begin(PORT);
 
  //Initialize the Buzzer
@@ -112,21 +115,30 @@ void loop() {
     int len =udp.read(incomingPacket,1023);
     //Print the content is the packet
     Serial.printf("UDP packet contents: %s\n",incomingPacket);
-    Serial.printf("condition: %d",std::strcmp(incomingPacket, "FULL"));
+
     if (isEqual(incomingPacket,"FULL") ) {
-      Serial.print("OK Turn ON Buzzer");
+      Serial.print("\nOK Turn ON Buzzer for FULL\n");
       buzzerTone(2);
   
     }else if(isEqual(incomingPacket,"LOW")){
-      Serial.print("OK Turn ON Buzzer tone1");
+      Serial.print("\nOK Turn ON Buzzer for LOW\n");
       buzzerTone(3);
     }else if (isEqual(incomingPacket,"OFF"))
     {
       buzzerTone(0);
-      Serial.print("Buzzer OFF");
-    }
-     else{
-      Serial.print("\nInvalid instruction");
+      Serial.print("\nBuzzer OFF\n");
+    }else if (isEqual(incomingPacket,"shutdown"))
+    {
+      buzzerTone(1);
+      Serial.print("\nBuzzer ON  For Shutdown\n");
+    }else if (isEqual(incomingPacket,"wait&down"))
+    { 
+      delay(20 * 60 * 1000);
+      buzzerTone(1);
+      Serial.print("\nBuzzer ON for Wait and shutdown\n");
+      
+    }else{
+      Serial.print("\nInvalid instruction\n");
     }
     
     //Send the packet to the client 
