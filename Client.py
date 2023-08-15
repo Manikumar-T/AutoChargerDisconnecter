@@ -36,10 +36,12 @@ def instructor():
 
     print("Battery percentage : ", battery_level)
     print("Power plugged in : ", charge_status)
-    if(battery ==100 and charge_status == True):
-        return "OFF"
+    if(battery_level ==100 and charge_status == True):
+        return "FULL\0"
+    elif(battery_level <40 and charge_status == False):
+        return "LOW\0"
     else:
-        return "ON"
+       return "FULL\0"
     
 sendData(msgFromClient)
 msg = "Message from Server {}".format(getReceivedData())
@@ -47,5 +49,6 @@ msg = "Message from Server {}".format(getReceivedData())
 print(msg)
 
 
-sendData("Turn "+instructor())
+sendData("LOW\0")
+print(instructor())
 

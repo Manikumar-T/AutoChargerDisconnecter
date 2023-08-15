@@ -4,26 +4,65 @@
 //WiFiUdp module is used to Create the udp server
 #include<WiFiUdp.h>
 
-#include<Servo.h>
-
-
 bool isEqual(char value1[] , char value2[]);
+void buzzerTone(int tone_no);
+
 //It's the SSID and Password of the wifi network i want to connect
 #define SSID "Mani's Galaxy A71"
 #define PASSWORD "        "
-
+#define BUZZER 5 //D1
 //Define the Port the server has to run
 #define PORT 4210
 
 //UDP object to access to initialize the udp server
 WiFiUDP udp;
 
-
 //char arrar of message to send to client
 char replayPacket[] = "Hi i am esp8266 speaking ";
 
 bool isEqual(char value1[] , char value2[]) {
  return std::strcmp(value1, value2) == 0;
+}
+
+void buzzerTone(int tone_no) {
+  if(tone_no == 0) {
+    noTone(BUZZER);
+  }else if (tone_no == 1) {
+      tone(BUZZER,1000);
+      
+  }else if (tone_no == 2){
+    
+    for(int i=0; i<5; i++)
+    {
+      tone(BUZZER,1000);
+      delay(1000);
+      noTone(BUZZER);
+      delay(1000);
+      
+
+    } 
+    noTone(BUZZER);
+    Serial.print("\n Buzzer OFF");
+  }else if (tone_no == 3){
+    for(int i=0; i<5; i++)
+    {
+      tone(BUZZER,1000);
+      delay(1000);
+      tone(BUZZER,1500);
+      delay(1000);
+      tone(BUZZER,2000);
+      delay(1000);
+      tone(BUZZER,2500);
+      delay(1000);
+      tone(BUZZER,3000);
+      delay(1000);
+
+    }
+    noTone(BUZZER);
+    Serial.print("\n Buzzer OFF");
+    
+  }
+  
 }
 
 void setup() {
@@ -48,10 +87,10 @@ void setup() {
   
   //Begin to listening 
   Serial.print("\nStart UDP server at port 4210");
-
   udp.begin(PORT);
 
-
+ //Initialize the Buzzer
+ pinMode(BUZZER,OUTPUT);
   
 }
 
@@ -69,12 +108,18 @@ void loop() {
     int len =udp.read(incomingPacket,1023);
     //Print the content is the packet
     Serial.printf("UDP packet contents: %s\n",incomingPacket);
-    
-    if (isEqual(incomingPacket,"Turn ON") ) {
-      Serial.print("OK Turn ON the charger");
+    Serial.printf("condition: %d",std::strcmp(incomingPacket, "FULL"));
+    if (isEqual(incomingPacket,"FULL") ) {
+      Serial.print("OK Turn ON Buzzer");
+      buzzerTone(2);
+  
+    }else if(isEqual(incomingPacket,"LOW")){
+      Serial.print("OK Turn ON Buzzer tone1");
+      buzzerTone(3);
     }else{
-      Serial.print("OK Turn OFF the charger");
+      Serial.print("\nInvalid instruction");
     }
+    
     //Send the packet to the client 
     udp.beginPacket(udp.remoteIP(),udp.remotePort());
     udp.write(replayPacket);
