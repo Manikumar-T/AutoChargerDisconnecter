@@ -40,15 +40,18 @@ def instructor():
         return "FULL\0"
     elif(battery_level <40 and charge_status == False):
         return "LOW\0"
+    elif(battery_level< 40 and charge_status == True):
+       return "OFF\0"
+    elif(battery_level <100 and charge_status == False):
+        return "OFF\0"
     else:
-       return "FULL\0"
+        return "NO Event"
     
-sendData(msgFromClient)
-msg = "Message from Server {}".format(getReceivedData())
+#sendData(msgFromClient)
+#msg = "Message from Server {}".format(getReceivedData())
 
-print(msg)
+#print(msg)
 
+sendData(instructor())
 
-sendData("LOW\0")
-print(instructor())
 

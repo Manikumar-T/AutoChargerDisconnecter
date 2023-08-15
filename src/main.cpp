@@ -20,10 +20,12 @@ WiFiUDP udp;
 //char arrar of message to send to client
 char replayPacket[] = "Hi i am esp8266 speaking ";
 
+//Function to Compare the two string
 bool isEqual(char value1[] , char value2[]) {
  return std::strcmp(value1, value2) == 0;
 }
 
+//Buzzer to produce the tone 
 void buzzerTone(int tone_no) {
   if(tone_no == 0) {
     noTone(BUZZER);
@@ -46,15 +48,17 @@ void buzzerTone(int tone_no) {
   }else if (tone_no == 3){
     for(int i=0; i<5; i++)
     {
-      tone(BUZZER,1000);
-      delay(1000);
-      tone(BUZZER,1500);
-      delay(1000);
-      tone(BUZZER,2000);
+      tone(BUZZER,3000);
       delay(1000);
       tone(BUZZER,2500);
       delay(1000);
-      tone(BUZZER,3000);
+      tone(BUZZER,2000);
+      delay(1000);
+      tone(BUZZER,1500);
+      delay(1000);
+      tone(BUZZER,1000);
+      delay(1000);
+      noTone(BUZZER);
       delay(1000);
 
     }
@@ -116,14 +120,19 @@ void loop() {
     }else if(isEqual(incomingPacket,"LOW")){
       Serial.print("OK Turn ON Buzzer tone1");
       buzzerTone(3);
-    }else{
+    }else if (isEqual(incomingPacket,"OFF"))
+    {
+      buzzerTone(0);
+      Serial.print("Buzzer OFF");
+    }
+     else{
       Serial.print("\nInvalid instruction");
     }
     
     //Send the packet to the client 
-    udp.beginPacket(udp.remoteIP(),udp.remotePort());
-    udp.write(replayPacket);
-    udp.endPacket();
+    // udp.beginPacket(udp.remoteIP(),udp.remotePort());
+    // udp.write(replayPacket);
+    // udp.endPacket();
 
   }
 }
