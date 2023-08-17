@@ -43,7 +43,7 @@ def instructor():
     print("Power plugged in : ", charge_status)
     
     #condition for if charge full and the charger is connected
-    if(battery_level == 99 and charge_status == True):
+    if((battery_level>=99 and battery_level<=100) and charge_status == True):
         return "FULL\0"
     #condition for if charge is low and the charger is not connected
     elif(battery_level < 40 and charge_status == False):
